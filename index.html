@@ -16,6 +16,7 @@
     <script type="text/javascript" src="./file/love.js" charset="utf-8"></script>
     
     <style>
+        /* Mobile responsive adjustments */
         body, html {
             margin: 0;
             padding: 0;
@@ -30,41 +31,19 @@
         #wrap {
             position: relative;
             margin: 0 auto;
-            width: 1100px; /* Restored original width restriction for animation tracking */
+            width: 100% !important;
+            max-width: 1100px;
         }
         canvas {
             display: block;
             max-width: 100%;
-            height: auto !important;
+            height: auto !important; /* Forces aspect ratio scaling on smaller devices */
             margin: 0 auto;
         }
         #text {
             z-index: 10;
-            font-size: 14px;
+            font-size: 14px; /* Slightly smaller for mobile layout scaling */
         }
-        
-        /* Fixed positioning matching original structural logic */
-        #clock-box {
-            position: absolute;
-            left: 650px;       /* Adjusted horizontally to sit beautifully beside the tree */
-            top: 400px;        /* Matches your original vertical design point */
-            font-size: 16px;   /* Adjusted size */
-            color: #ffffff;    /* Changes counter text to white */
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Ensures white text is readable over the canvas */
-            display: none;     /* Keeps hidden until animation framework triggers it */
-        }
-        .clock-title {
-            font-weight: bold;
-            color: #ffffff;    /* Changes "The world... since" line to white */
-            margin-bottom: 8px;
-            display: block;
-            font-size: 18px;   /* Adjusted size */
-        }
-        #clock .digit {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
         @media (max-width: 768px) {
             #text {
                 position: relative;
@@ -77,9 +56,9 @@
                 position: relative;
                 left: 0 !important;
                 top: 0 !important;
-                width: 100%;
                 text-align: center;
-                margin-top: 15px;
+                margin-top: 10px;
+                font-size: 14px;
             }
         }
     </style>
@@ -88,27 +67,6 @@
         function playAudio() {
             var audio = document.getElementById("myAudio");
             audio.play();
-        }
-        
-        // Active Count-Up Clock from June 28, 2000
-        function runCountUp() {
-            var startDate = new Date("June 28, 2000 00:00:00").getTime();
-            
-            setInterval(function() {
-                var now = new Date().getTime();
-                var difference = now - startDate;
-
-                var days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-                document.getElementById("clock").innerHTML = 
-                    days + " <span class='digit'>days</span> " + 
-                    hours + " <span class='digit'>hours</span> " + 
-                    minutes + " <span class='digit'>minutes</span> " + 
-                    seconds + " <span class='digit'>seconds</span>";
-            }, 1000);
         }
     </script>
 </head>
@@ -131,12 +89,9 @@
                     <span class="say">Hope u have a great day today ❤️😘</span><br>
                 </div>
             </div>
-            
             <div id="clock-box">
-                <span class="clock-title">The World Just Got Luckier Since</span>
-                <div id="clock">Calculating time...</div>
+                <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
             </div>
-            
             <canvas id="canvas" width="1100" height="680"></canvas>
         </div>
     </div>
@@ -150,12 +105,18 @@
             return false;
         }
 
+        // Detect mobile layout width adjustments dynamically
+        var isMobile = window.innerWidth < 768;
+        var width = isMobile ? window.innerWidth : 1100;
+        var height = isMobile ? (window.innerWidth * (680 / 1100)) : 680;      
+        
+        // Keeps internal aspect ratio mathematically bound to tree instructions
         canvas.attr("width", 1100);
         canvas.attr("height", 680);
 
         var opts = {
             seed: {
-                x: 1100 / 2 - 20,
+                x: 1100 / 2 - 20, // Keep seed centered to the 1100px base grid
                 color: "rgb(190, 26, 37)",
                 scale: 2
             },
@@ -189,6 +150,7 @@
             }
         }
 
+        // Initialize script logic mapping to standard canvas coordinates
         var tree = new Tree(canvas[0], 1100, 680, opts);
         var seed = tree.seed;
         var foot = tree.footer;
@@ -197,6 +159,8 @@
         canvas.click(function(e) {
             playAudio();
             var offset = canvas.offset(), x, y;
+            
+            // Adjust hitboxes for CSS scaled sizes
             var scaleX = 1100 / canvas.width();
             var scaleY = 680 / canvas.height();
             
@@ -267,11 +231,6 @@
         var textAnimate = eval(Jscex.compile("async", function () {
             $("#code").show().typewriter();
         }));
-
-        var clockAnimate = eval(Jscex.compile("async", function () {
-            $("#clock-box").fadeIn(500);
-            runCountUp();
-        }));
         
         var runAsync = eval(Jscex.compile("async", function () {
             $await(seedAnimate());
@@ -279,7 +238,6 @@
             $await(flowAnimate());
             $await(moveAnimate());
             textAnimate().start();
-            $await(clockAnimate());
         }));
 
         runAsync().start();
