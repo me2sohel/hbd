@@ -43,35 +43,38 @@
             z-index: 10;
             font-size: 14px;
         }
+        /* Positions the clock elegantly beside the canvas elements */
         #clock-box {
             position: absolute;
-            left: 500px;
-            top: 400px;
-            font-size: 14px;
-            display: none; /* Keeps it hidden until the tree animation finishes */
+            left: 780px;      /* Positioned to the right side of the canvas */
+            top: 280px;       /* Adjusted vertically to align nicely next to the tree */
+            font-size: 16px;   /* Slightly bumped up the size */
+            color: #ffffff;   /* Changes timer text to white */
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.4); /* Ensures text stays highly readable */
+            display: none;    /* Keeps it hidden until the tree animation finishes */
+            z-index: 99;
         }
         .clock-title {
             font-weight: bold;
-            color: #ff5e7e;
-            margin-bottom: 5px;
+            color: #ffffff;   /* Changes "The world... since" line to white */
+            margin-bottom: 8px;
             display: block;
+            font-size: 18px;
+        }
+        #clock .digit {
+            font-size: 20px;
+            font-weight: bold;
         }
 
-        @media (max-width: 768px) {
-            #text {
-                position: relative;
-                width: 90%;
-                margin: 10px auto;
-                left: 0 !important;
-                top: 0 !important;
-            }
+        @media (max-width: 900px) {
             #clock-box {
                 position: relative;
                 left: 0 !important;
                 top: 0 !important;
                 width: 100%;
                 text-align: center;
-                margin-top: 15px;
+                margin-top: 20px;
+                padding-bottom: 30px;
             }
         }
     </style>
@@ -261,7 +264,6 @@
         }));
 
         var clockAnimate = eval(Jscex.compile("async", function () {
-            // Fades in the live count-up clock right as the layout shifts open
             $("#clock-box").fadeIn(500);
             runCountUp();
         }));
